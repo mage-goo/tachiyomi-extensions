@@ -68,8 +68,6 @@ class Madokami : ConfigurableSource, ParsedHttpSource() {
         val manga = SManga.create()
         // manga.setUrlWithoutDomain(element.attr("href"))
         manga.url = element.attr("href")
-        var pathSegments = element.attr("href").split("/")
-
         manga.title = URLDecoder.decode(element.attr("href").split("/").last(), "UTF-8").trimStart('!')
         return manga
     }
@@ -89,13 +87,11 @@ class Madokami : ConfigurableSource, ParsedHttpSource() {
     override fun mangaDetailsRequest(manga: SManga): Request {
         val url = (baseUrl + manga.url).toHttpUrlOrNull()!!
         if (url.pathSize > 5 && url.pathSegments[0] == "Manga" && url.pathSegments[1].length == 1) {
-            // return authenticate(GET(url.newBuilder().removePathSegment(5).build().toUrl().toExternalForm(), headers))
             val builder = url.newBuilder()
             for (i in 5 until url.pathSize) { builder.removePathSegment(5) }
             return authenticate(GET(builder.build().toUrl().toExternalForm(), headers))
         }
         if (url.pathSize > 2 && url.pathSegments[0] == "Raws") {
-            // return authenticate(GET(url.newBuilder().removePathSegment(2).build().toUrl().toExternalForm(), headers))
             val builder = url.newBuilder()
             for (i in 2 until url.pathSize) { builder.removePathSegment(2) }
             return authenticate(GET(builder.build().toUrl().toExternalForm(), headers))
