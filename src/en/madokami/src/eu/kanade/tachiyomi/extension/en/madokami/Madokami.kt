@@ -66,7 +66,6 @@ class Madokami : ConfigurableSource, ParsedHttpSource() {
 
     override fun popularMangaFromElement(element: Element): SManga {
         val manga = SManga.create()
-        // manga.setUrlWithoutDomain(element.attr("href"))
         manga.url = element.attr("href")
         manga.title = URLDecoder.decode(element.attr("href").split("/").last(), "UTF-8").trimStart('!')
         return manga
@@ -93,7 +92,10 @@ class Madokami : ConfigurableSource, ParsedHttpSource() {
         }
         if (url.pathSize > 2 && url.pathSegments[0] == "Raws") {
             val builder = url.newBuilder()
-            for (i in 2 until url.pathSize) { builder.removePathSegment(2) }
+            // to accomodate path pattern of /Raws/Magz/Series, this will remove all latter path segments that starts with !
+            // will fails if there's ever manga with ! prefix, but for now it works
+            var i = url.pathSize - 1
+            while (url.pathSegments[i].startsWith("!") && i >= 2) { builder.removePathSegment(i); i--; }
             return authenticate(GET(builder.build().toUrl().toExternalForm(), headers))
         }
         return authenticate(GET(url.toUrl().toExternalForm(), headers))
