@@ -116,7 +116,7 @@ class Madokami : ConfigurableSource, ParsedHttpSource() {
         return manga
     }
 
-    override fun getMangaUrl(manga: SManga) = "$baseUrl" + manga.url
+    override fun getMangaUrl(manga: SManga) = "$baseUrl/" + manga.url.trimStart('/')
 
     override fun chapterListRequest(manga: SManga) = authenticate(GET("$baseUrl/" + manga.url, headers))
 
